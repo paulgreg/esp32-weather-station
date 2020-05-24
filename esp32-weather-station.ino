@@ -1,6 +1,9 @@
 #include <GxEPD2_BW.h>
 #include <GxEPD2_3C.h>
 #include <Fonts/FreeMonoBold9pt7b.h>
+#include <Fonts/FreeMonoBold12pt7b.h>
+#include <Fonts/FreeMonoBold18pt7b.h>
+#include <Fonts/FreeMonoBold24pt7b.h>
 
 GxEPD2_3C<GxEPD2_270c, GxEPD2_270c::HEIGHT> display(GxEPD2_270c(/*CS=*/ 15, /*DC=*/ 27, /*RST=*/ 26, /*BUSY=*/ 25));
 
@@ -15,7 +18,6 @@ GxEPD2_3C<GxEPD2_270c, GxEPD2_270c::HEIGHT> display(GxEPD2_270c(/*CS=*/ 15, /*DC
 
 #include <Arduino_JSON.h>
 
-
 JSONVar json;
 
 const int SECOND = 1000;
@@ -25,11 +27,11 @@ const int HOUR = 60 * MINUTE;
 #define uS_TO_S_FACTOR 1000000  //Conversion factor for micro seconds to seconds
 
 struct Weather {
-  char temp[10];
-  char feelslike[10];
-  char humidity[10];
-  char updated[10];
-  char main[20];
+  char temp[7];
+  char feelslike[7];
+  char humidity[5];
+  char updated[6];
+  char main[32];
   char description[128];
   char icon[10];
 };
@@ -50,11 +52,7 @@ void setup() {
   SPI.begin(13, 12, 14, 15); // map and init SPI pins SCK(13), MISO(12), MOSI(14), SS(15)
   // *** end of special handling for Waveshare ESP32 Driver board *** //
 
-  // most e-papers have width < height (portrait) as native orientation, especially the small ones
-  // in GxEPD2 rotation 0 is used for native orientation (most TFT libraries use 0 fix for portrait orientation)
-  // set rotation to 1 (rotate right 90 degrees) to have enough space on small displays (landscape)
   display.setRotation(1);
-
 
   if (connectToWifi()) {
     boolean jsonParsed = getJSON(URL);
@@ -65,8 +63,8 @@ void setup() {
       int dt = (int) json["current"]["dt"];
       int t = dt + timezone_offset;
       sprintf(weather.updated, "%02d:%02d", hour(t), minute(t));
-      sprintf(weather.temp, "%.1f °C", (double) json["current"]["temp"]);
-      sprintf(weather.feelslike, "%.1f °C", (double) json["current"]["feels_like"]);
+      sprintf(weather.temp, "%.1f C", (double) json["current"]["temp"]);
+      sprintf(weather.feelslike, "%.1f C", (double) json["current"]["feels_like"]);
       sprintf(weather.humidity, "%i %%", (int) json["current"]["humidity"]);      
       sprintf(weather.main, "%s", (const char*) json["current"]["weather"][0]["main"]);      
       sprintf(weather.description, "%s", (const char*) json["current"]["weather"][0]["description"]);      
@@ -88,17 +86,46 @@ void setup() {
 
 
 void loop() {
-  Serial.println("loop (should never go there)");
-  delay(1000);
+  Serial.println("loop should never be called because it should sleep");
+  delay(MINUTE);
 }
 
 void displayWeather(Weather* weather) {
-  char text[64];
-  sprintf(text, "%s / %s / %s / %s / %s", weather->feelslike, weather->humidity, weather->updated, weather->icon, weather->description);
-  Serial.println(text);
-  displayCenteredText(text);
-}
+//, weather->humidity, weather->updated, weather->icon, weather->description);
+  display.fillScreen(GxEPD_WHITE);
 
+  display.firstPage();
+  do
+  {  
+    // Temp (feels like)
+    display.setFont(&FreeMonoBold24pt7b);
+    display.setTextColor(GxEPD_RED);
+    display.setCursor(80, 40);
+    display.println(weather->feelslike);
+
+    // Humidity
+    display.setFont(&FreeMonoBold18pt7b);
+    display.setTextColor(GxEPD_BLACK);
+    display.setCursor(170, 80);
+    display.println(weather->humidity);
+
+    // Description
+    display.setFont(&FreeMonoBold18pt7b);
+    display.setTextColor(GxEPD_RED);
+    int16_t tbx, tby; uint16_t tbw, tbh;
+    display.getTextBounds(weather->description, 0, 0, &tbx, &tby, &tbw, &tbh);
+    uint16_t x = ((display.width() - tbw) / 2) - tbx;
+    display.setCursor(x, 120);
+    display.println(weather->description);
+
+    // Update
+    display.setFont(&FreeMonoBold9pt7b);
+    display.setTextColor(GxEPD_BLACK);
+    display.setCursor(200, 160);
+    display.println(weather->updated);
+
+  } while (display.nextPage());
+}
 
 void displayCenteredText(char* text) {
   display.setFont(&FreeMonoBold9pt7b);

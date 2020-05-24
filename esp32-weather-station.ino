@@ -36,8 +36,6 @@ struct Weather {
   char icon[10];
 };
 
-Weather weather;
-
 // use Board "ESP32 Dev Module" to build with Arduino IDE
 void setup() {
   Serial.begin(115200);
@@ -59,17 +57,8 @@ void setup() {
     if (!jsonParsed) {
       displayCenteredText("Error getting JSON");
     } else {
-      int timezone_offset = (int) json["timezone_offset"];
-      int dt = (int) json["current"]["dt"];
-      int t = dt + timezone_offset;
-      sprintf(weather.updated, "%02d:%02d", hour(t), minute(t));
-      sprintf(weather.temp, "%.1f C", (double) json["current"]["temp"]);
-      sprintf(weather.feelslike, "%.1f C", (double) json["current"]["feels_like"]);
-      sprintf(weather.humidity, "%i %%", (int) json["current"]["humidity"]);      
-      sprintf(weather.main, "%s", (const char*) json["current"]["weather"][0]["main"]);      
-      sprintf(weather.description, "%s", (const char*) json["current"]["weather"][0]["description"]);      
-      sprintf(weather.icon, "%s", (const char*) json["current"]["weather"][0]["icon"]);      
-
+      Weather weather;
+      fillWeatherFromJson(&weather);
       displayWeather(&weather);
     }
   } else {
@@ -83,7 +72,6 @@ void setup() {
   esp_sleep_enable_timer_wakeup(HOUR * uS_TO_S_FACTOR);
   esp_deep_sleep_start();
 }
-
 
 void loop() {
   Serial.println("loop should never be called because it should sleep");
@@ -118,13 +106,30 @@ void displayWeather(Weather* weather) {
     display.setCursor(x, 120);
     display.println(weather->description);
 
-    // Update
+    // Updated time
     display.setFont(&FreeMonoBold9pt7b);
     display.setTextColor(GxEPD_BLACK);
     display.setCursor(200, 160);
     display.println(weather->updated);
 
   } while (display.nextPage());
+}
+
+void fillWeatherFromJson(Weather* weather) {
+  int timezone_offset = (int) json["timezone_offset"];
+  int dt = (int) json["current"]["dt"];
+  int t = dt + timezone_offset;
+  sprintf(weather->updated, "%02d:%02d", hour(t), minute(t));
+  sprintf(weather->temp, "%.1f C", (double) json["current"]["temp"]);
+  sprintf(weather->feelslike, "%.1f C", (double) json["current"]["feels_like"]);
+  sprintf(weather->humidity, "%i %%", (int) json["current"]["humidity"]);
+  sprintf(weather->main, "%s", (const char*) json["current"]["weather"][0]["main"]);
+  sprintf(weather->description, "%s", (const char*) json["current"]["weather"][0]["description"]);
+  sprintf(weather->icon, "%s", (const char*) json["current"]["weather"][0]["icon"]);
+
+  char buf[256];
+  sprintf(buf, "debug: %s / %s / %s / %s / %s / %s", weather->feelslike, weather->humidity, weather->updated, weather->main, weather->icon, weather->description);
+  Serial.println(buf);
 }
 
 void displayCenteredText(char* text) {

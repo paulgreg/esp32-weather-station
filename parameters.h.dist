@@ -1,4 +1,4 @@
 #define WIFI_SSID  "SSID"
 #define WIFI_PASSWORD "PASSWORD"
 
-#define URL "http://api.openweathermap.org/data/2.5/onecall?units=metric&exclude=minutely,hourly,daily&appid={APIKEY}&lat={lat}&lon={lon}"
+#define URL "http://api.openweathermap.org/data/2.5/onecall?units=metric&exclude=minutely,hourly,daily&appid={APIKEY}&lat={lat}&lon={lon}&lang=en"

@@ -10,6 +10,10 @@ GxEPD2_3C<GxEPD2_270c, GxEPD2_270c::HEIGHT> display(GxEPD2_270c(/*CS=*/ 15, /*DC
 // Screen used
 #include "bitmaps/Bitmaps3c176x264.h" // 2.7"  b/w/r
 
+// Icons
+#include "icons/01d.h"
+#include "icons/03d.h"
+
 #include <TimeLib.h>
 
 #include <WiFi.h>
@@ -37,7 +41,6 @@ struct Weather {
 // use Board "ESP32 Dev Module" to build with Arduino IDE
 void setup() {
   Serial.begin(115200);
-  
   display.init(115200);
   // *** special handling for Waveshare ESP32 Driver board *** //
   SPI.end(); // release standard SPI pins, e.g. SCK(18), MISO(19), MOSI(23), SS(5)
@@ -65,18 +68,21 @@ void setup() {
   sleep();
 }
 
+
 void loop() {
   Serial.println("loop should never be called because it should sleep");
   delay(MINUTE);
 }
 
 void displayWeather(Weather* weather) {
-//, weather->humidity, weather->updated, weather->icon, weather->description);
   display.fillScreen(GxEPD_WHITE);
 
   display.firstPage();
   do
   {  
+    //display.drawBitmap(0, 0, icon_03d_bits, icon_03d_width, icon_03d_height, GxEPD_BLACK);
+    display.drawBitmap(0, 0, icon_01d_bits, icon_01d_width, icon_01d_height, GxEPD_RED);
+    
     // Temp (feels like)
     display.setFont(&FreeMonoBold24pt7b);
     display.setTextColor(GxEPD_RED);
@@ -101,7 +107,7 @@ void displayWeather(Weather* weather) {
     // Updated time
     display.setFont(&FreeMonoBold9pt7b);
     display.setTextColor(GxEPD_BLACK);
-    display.setCursor(200, 160);
+    display.setCursor(200, 170);
     display.println(weather->updated);
 
   } while (display.nextPage());

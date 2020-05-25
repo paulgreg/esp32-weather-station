@@ -11,8 +11,20 @@ GxEPD2_3C<GxEPD2_270c, GxEPD2_270c::HEIGHT> display(GxEPD2_270c(/*CS=*/ 15, /*DC
 #include "bitmaps/Bitmaps3c176x264.h" // 2.7"  b/w/r
 
 // Icons
-#include "icons/01d.h"
-#include "icons/03d.h"
+#include "icons/01d-sun.h"
+#include "icons/02d-sun.h"
+#include "icons/02d-cloud.h"
+#include "icons/03d-cloud.h"
+#include "icons/04d-cloud.h"
+#include "icons/04d-cloud-back.h"
+#include "icons/09d-cloud.h"
+#include "icons/09d-rain.h"
+#include "icons/10d-cloud.h"
+#include "icons/10d-sun.h"
+#include "icons/11d-cloud.h"
+#include "icons/11d-lightning.h"
+#include "icons/13d-snow.h"
+#include "icons/50d-fog.h"
 
 #include <TimeLib.h>
 
@@ -72,7 +84,6 @@ void setup() {
   sleep(sleepTime);
 }
 
-
 void loop() {
   Serial.println("loop should never be called because it should sleep");
   delay(MINUTE);
@@ -83,10 +94,41 @@ void displayWeather(Weather* weather) {
 
   display.firstPage();
   do
-  {  
-    //display.drawBitmap(0, 0, icon_03d_bits, icon_03d_width, icon_03d_height, GxEPD_BLACK);
-    display.drawBitmap(0, 0, icon_01d_bits, icon_01d_width, icon_01d_height, GxEPD_RED);
-    
+  {
+    if (strcmp(weather->icon, "01d") == 0) {
+      // 01d - Sun
+      display.drawBitmap(0, 0, icon_01d_sun_bits, icon_01d_sun_width, icon_01d_sun_height, GxEPD_RED);
+    } else if (strcmp(weather->icon, "02d") == 0) {
+      // 02d - Cloud, sun
+      display.drawBitmap(0, 0, icon_02d_sun_bits, icon_02d_sun_width, icon_02d_sun_height, GxEPD_RED);
+      display.drawBitmap(0, 0, icon_02d_cloud_bits, icon_02d_cloud_width, icon_02d_cloud_height, GxEPD_BLACK);
+    } else if (strcmp(weather->icon, "03d") == 0) {
+      // 03d - Cloud
+      display.drawBitmap(0, 0, icon_03d_cloud_bits, icon_03d_cloud_width, icon_03d_cloud_height, GxEPD_BLACK);
+    } else if (strcmp(weather->icon, "04d") == 0) {
+      // 04d - Cloud, second cloud
+      display.drawBitmap(0, 0, icon_04d_cloud_bits, icon_04d_cloud_width, icon_04d_cloud_height, GxEPD_BLACK);
+      display.drawBitmap(0, 0, icon_04d_cloud_back_bits, icon_04d_cloud_back_width, icon_04d_cloud_back_height, GxEPD_RED);
+    } else if (strcmp(weather->icon, "09d") == 0) {
+      // 09d - Clouds, rain
+      display.drawBitmap(0, 0, icon_09d_cloud_bits, icon_09d_cloud_width, icon_09d_cloud_height, GxEPD_BLACK);
+      display.drawBitmap(0, 0, icon_09d_rain_bits, icon_09d_rain_width, icon_09d_rain_height, GxEPD_RED);
+    } else if (strcmp(weather->icon, "10d") == 0) {
+      // 10d - Clouds, sun, rain
+      display.drawBitmap(0, 0, icon_10d_cloud_bits, icon_10d_cloud_width, icon_10d_cloud_height, GxEPD_BLACK);
+      display.drawBitmap(0, 0, icon_10d_sun_bits, icon_10d_sun_width, icon_10d_sun_height, GxEPD_RED);
+    } else if (strcmp(weather->icon, "11d") == 0) {
+      // 11d - Clouds, lightning
+      display.drawBitmap(0, 0, icon_11d_cloud_bits, icon_11d_cloud_width, icon_11d_cloud_height, GxEPD_BLACK);
+      display.drawBitmap(0, 0, icon_11d_ligthning_bits, icon_11d_ligthning_width, icon_11d_ligthning_height, GxEPD_RED);
+    } else if (strcmp(weather->icon, "13d") == 0) {
+      // 13d - Snow
+      display.drawBitmap(0, 0, icon_13d_snow_bits, icon_13d_snow_width, icon_13d_snow_height, GxEPD_BLACK);
+    } else if (strcmp(weather->icon, "50d") == 0) {
+      // 50d - Fog
+      display.drawBitmap(0, 0, icon_50d_fog_bits, icon_50d_fog_width, icon_50d_fog_height, GxEPD_BLACK);
+    }
+
     // Temp (feels like)
     display.setFont(&FreeMonoBold24pt7b);
     display.setTextColor(GxEPD_RED);

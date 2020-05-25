@@ -2,6 +2,10 @@
 
 That project is a weather station (getting data from openweathermap.org) displayed on an e-ink screen.
 
+The main advantage of using an eink screen is that display stays, even if esp32 is powered down.
+So the ESP32 is waking up, fetch weather data, update screen and sleeps for one hour.
+Also, refresh is stopped from around midnight to 6 a.m.
+
 Here’s the [hackaday project page](https://hackaday.io/project/171910-esp32-weather-station) including pictures.
 
 Hardware components are :
@@ -21,6 +25,14 @@ I’m using the nice [GxEPD2](https://github.com/ZinggJM/GxEPD2) library from [Z
 
   * https://openweathermap.org/api/one-call-api
   * create an account and an API KEY
+
+
+## Icons
+
+Icons are [official icons from OpenWeatherMap](https://openweathermap.org/weather-conditions#How-to-get-icon-URL).
+
+To be able to open them correctly in GxEPD2, they are converted using [LCD converter](http://en.radzio.dxp.pl/bitmap_converter/) with byte orientation set to horizontal and big endian settings.
+
 
 ## HTTP request & JSON parsing
 

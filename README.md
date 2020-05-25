@@ -31,7 +31,8 @@ I’m using the nice [GxEPD2](https://github.com/ZinggJM/GxEPD2) library from [Z
 
 Icons are [official icons from OpenWeatherMap](https://openweathermap.org/weather-conditions#How-to-get-icon-URL).
 
-To be able to open them correctly in GxEPD2, they are converted using [LCD converter](http://en.radzio.dxp.pl/bitmap_converter/) with byte orientation set to horizontal and big endian settings.
+To be able to open them correctly in GxEPD2, I convert them using [LCD Assistant](http://en.radzio.dxp.pl/bitmap_converter/) with byte orientation set to horizontal and big endian settings.
+It can be opened via wine (by adding 32 bits architecture).
 
 
 ## HTTP request & JSON parsing

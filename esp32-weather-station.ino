@@ -20,11 +20,9 @@ GxEPD2_3C<GxEPD2_270c, GxEPD2_270c::HEIGHT> display(GxEPD2_270c(/*CS=*/ 15, /*DC
 
 JSONVar json;
 
-const int SECOND = 1000;
-const int MINUTE = 60 * SECOND;
-const int HOUR = 60 * MINUTE;
-
-#define uS_TO_S_FACTOR 1000000  //Conversion factor for micro seconds to seconds
+const uint64_t SECOND = 1000;
+const uint64_t MINUTE = 60 * SECOND;
+const uint64_t HOUR = 60 * MINUTE;
 
 struct Weather {
   char temp[7];
@@ -39,9 +37,6 @@ struct Weather {
 // use Board "ESP32 Dev Module" to build with Arduino IDE
 void setup() {
   Serial.begin(115200);
-
-  print_wakeup_reason();
-  esp_sleep_disable_wakeup_source(ESP_SLEEP_WAKEUP_TOUCHPAD); // disable wake up from touch pad
   
   display.init(115200);
   // *** special handling for Waveshare ESP32 Driver board *** //
@@ -50,6 +45,8 @@ void setup() {
   SPI.begin(13, 12, 14, 15); // map and init SPI pins SCK(13), MISO(12), MOSI(14), SS(15)
   // *** end of special handling for Waveshare ESP32 Driver board *** //
 
+  print_wakeup_reason();
+  
   display.setRotation(1);
 
   if (connectToWifi()) {
@@ -65,12 +62,7 @@ void setup() {
     displayCenteredText("Can’t connect to wifi");
   }
 
-  Serial.println("Sleep");
-  Serial.flush();
-  delay(1000);
-  display.powerOff();
-  esp_sleep_enable_timer_wakeup(HOUR * uS_TO_S_FACTOR);
-  esp_deep_sleep_start();
+  sleep();
 }
 
 void loop() {
@@ -218,6 +210,19 @@ boolean getJSON(const char* url) {
     http.end();
   }  
   return success;
+}
+
+void sleep() {
+  Serial.println("Sleep");
+  Serial.flush();
+  delay(1000);
+  display.powerOff();
+  esp_sleep_disable_wakeup_source(ESP_SLEEP_WAKEUP_TOUCHPAD); // disable wake up from touch pad
+  const uint64_t uS_TO_S_FACTOR = 1000000L; // conversion factor for micro seconds to seconds
+  const uint64_t sleep_time_us = HOUR * uS_TO_S_FACTOR; 
+  esp_sleep_enable_timer_wakeup(sleep_time_us);
+  esp_deep_sleep_start();
+  delay(MINUTE);
 }
 
 void print_wakeup_reason(){

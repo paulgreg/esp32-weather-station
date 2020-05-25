@@ -27,6 +27,7 @@ JSONVar json;
 const uint64_t SECOND = 1000;
 const uint64_t MINUTE = 60 * SECOND;
 const uint64_t HOUR = 60 * MINUTE;
+const uint64_t MICRO_SEC_TO_MILLI_SEC_FACTOR = 1000;
 
 struct Weather {
   char temp[7];
@@ -52,6 +53,8 @@ void setup() {
   
   display.setRotation(1);
 
+  uint64_t sleepTime = HOUR;
+  
   if (connectToWifi()) {
     boolean jsonParsed = getJSON(URL);
     if (!jsonParsed) {
@@ -60,12 +63,13 @@ void setup() {
       Weather weather;
       fillWeatherFromJson(&weather);
       displayWeather(&weather);
+      if (weather.updated[0] == '0' && weather.updated[1] == '0') sleepTime = HOUR * 6; // sleep for the night
     }
   } else {
     displayCenteredText("Can’t connect to wifi");
   }
 
-  sleep();
+  sleep(sleepTime);
 }
 
 
@@ -218,15 +222,11 @@ boolean getJSON(const char* url) {
   return success;
 }
 
-void sleep() {
-  Serial.println("Sleep");
+void sleep(uint64_t sleepTime) {
+//  esp_sleep_disable_wakeup_source(ESP_SLEEP_WAKEUP_TOUCHPAD); // disable wake up from touch pad
   Serial.flush();
-  delay(1000);
   display.powerOff();
-  esp_sleep_disable_wakeup_source(ESP_SLEEP_WAKEUP_TOUCHPAD); // disable wake up from touch pad
-  const uint64_t uS_TO_S_FACTOR = 1000000L; // conversion factor for micro seconds to seconds
-  const uint64_t sleep_time_us = HOUR * uS_TO_S_FACTOR; 
-  esp_sleep_enable_timer_wakeup(sleep_time_us);
+  esp_sleep_enable_timer_wakeup((uint64_t) sleepTime * MICRO_SEC_TO_MILLI_SEC_FACTOR);
   esp_deep_sleep_start();
   delay(MINUTE);
 }

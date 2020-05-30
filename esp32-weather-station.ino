@@ -50,6 +50,10 @@ struct Weather {
   char description[128];
   char icon[10];
 
+  char todayTempMorning[16];
+  char todayTempDay[16];
+  char todayTempEve[16];
+  char todayTempNight[16];
   char todayFeelslikeMorning[16];
   char todayFeelslikeDay[16];
   char todayFeelslikeEve[16];
@@ -101,10 +105,9 @@ void loop() {
 void displayWeather(Weather* weather) {
   display.fillScreen(GxEPD_WHITE);
 
-  char* feelslikeMorning = weather->todayFeelslikeMorning;
-  char* feelslikeDay = weather->todayFeelslikeDay;
-  char* feelslikeEve = weather->todayFeelslikeEve;
-  char* feelslikeNight = weather->todayFeelslikeNight;
+  char* tempMorning = weather->todayTempMorning;
+  char* tempDay = weather->todayTempDay;
+  char* tempEve = weather->todayTempEve;
   char* humidity = weather->todayHumidity;
   char* main = weather->todayMain;
   char* description = weather->todayDescription;
@@ -175,23 +178,23 @@ void displayWeather(Weather* weather) {
     display.setFont(&FreeMonoBold12pt7b);
     display.setTextColor(GxEPD_BLACK);
     display.setCursor(90, 20);
-    display.println(feelslikeMorning);
+    display.println(tempMorning);
 
     // Temp (feels like eve)
     display.setFont(&FreeMonoBold12pt7b);
     display.setTextColor(GxEPD_BLACK);
     display.setCursor(90, 45);
-    display.println(feelslikeEve);
+    display.println(tempEve);
 
     // Temp (feels like day)
     display.setFont(&FreeMonoBold18pt7b);
-    display.setTextColor(GxEPD_RED);
+    display.setTextColor(GxEPD_BLACK);
     display.setCursor(120, 85);
-    display.println(feelslikeDay);
+    display.println(tempDay);
 
     // Description
     display.setFont(&FreeMonoBold12pt7b);
-    display.setTextColor(GxEPD_RED);
+    display.setTextColor(GxEPD_BLACK);
     int16_t tbx, tby; uint16_t tbw, tbh;
     display.getTextBounds(description, 0, 0, &tbx, &tby, &tbw, &tbh);
     uint16_t x = ((display.width() - tbw) / 2) - tbx;
@@ -225,6 +228,10 @@ void fillWeatherFromJson(Weather* weather) {
   sprintf(weather->description, "%s", (const char*) json["current"]["weather"][0]["description"]);
   sprintf(weather->icon, "%s", (const char*) json["current"]["weather"][0]["icon"]);
 
+  sprintf(weather->todayTempMorning, "Morn: %.1f C", (double) json["daily"][0]["temp"]["morn"]);
+  sprintf(weather->todayTempDay, "%.1f C", (double) json["daily"][0]["temp"]["day"]);
+  sprintf(weather->todayTempEve, " Eve: %.1f C", (double) json["daily"][0]["temp"]["eve"]);
+  sprintf(weather->todayTempNight, "Night: %.1f C", (double) json["daily"][0]["temp"]["night"]);
   sprintf(weather->todayFeelslikeMorning, "Morn: %.1f C", (double) json["daily"][0]["feels_like"]["morn"]);
   sprintf(weather->todayFeelslikeDay, "%.1f C", (double) json["daily"][0]["feels_like"]["day"]);
   sprintf(weather->todayFeelslikeEve, " Eve: %.1f C", (double) json["daily"][0]["feels_like"]["eve"]);
@@ -237,7 +244,7 @@ void fillWeatherFromJson(Weather* weather) {
   char buf[256];
   sprintf(buf, "debug now: %s / %s / %s \n %s / %s / %s", weather->feelslike, weather->humidity, weather->updated, weather->main, weather->icon, weather->description);
   Serial.println(buf);
-  sprintf(buf, "debug today: %s / %s / %s / %s \n %s / %s / %s / %s", weather->todayFeelslikeMorning, weather->todayFeelslikeDay, weather->todayFeelslikeEve, weather->todayFeelslikeNight, weather->todayHumidity, weather->main, weather->icon, weather->description);
+  sprintf(buf, "debug today: %s / %s / %s / %s \n %s / %s / %s / %s", weather->todayTempMorning, weather->todayTempDay, weather->todayTempEve, weather->todayTempNight, weather->todayHumidity, weather->main, weather->icon, weather->description);
   Serial.println(buf);
 }
 

@@ -303,6 +303,7 @@ boolean connectToWifi() {
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
   Serial.println("");
+  WiFi.config(WiFi.localIP(), WiFi.gatewayIP(), WiFi.subnetMask(), IPAddress(9,9,9,9));
   return true;
 }
 

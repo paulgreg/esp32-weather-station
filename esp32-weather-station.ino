@@ -1,9 +1,10 @@
+// use Board "ESP32 Dev Module" to build with Arduino IDE
+
 #include <GxEPD2_BW.h>
 #include <GxEPD2_3C.h>
 #include <Fonts/FreeMonoBold9pt7b.h>
 #include <Fonts/FreeMonoBold12pt7b.h>
 #include <Fonts/FreeMonoBold18pt7b.h>
-#include <Fonts/FreeMonoBold24pt7b.h>
 
 GxEPD2_3C<GxEPD2_270c, GxEPD2_270c::HEIGHT> display(GxEPD2_270c(/*CS=*/ 15, /*DC=*/ 27, /*RST=*/ 26, /*BUSY=*/ 25));
 
@@ -42,29 +43,25 @@ const uint64_t HOUR = 60 * MINUTE;
 const uint64_t MICRO_SEC_TO_MILLI_SEC_FACTOR = 1000;
 
 struct Weather {
-  char temp[7];
-  char feelslike[7];
-  char humidity[5];
-  char updated[6];
-  char main[32];
-  char description[128];
-  char icon[10];
+  char iconH1[10];
+  char tempH1[5];
+  char feelsLikeH1[5];
+  char humidityH1[5];
 
-  char todayTempMorning[16];
-  char todayTempDay[16];
-  char todayTempEve[16];
-  char todayTempNight[16];
-  char todayFeelslikeMorning[16];
-  char todayFeelslikeDay[16];
-  char todayFeelslikeEve[16];
-  char todayFeelslikeNight[16];
-  char todayHumidity[16];
-  char todayMain[32];
-  char todayDescription[128];
-  char todayIcon[10];
+  char iconD1[10];
+  char tempMinD1[5];
+  char tempMaxD1[5];
+  char humidityD1[5];
+
+  char iconD2[10];
+  char tempMinD2[5];
+  char tempMaxD2[5];
+  char humidityD2[5];
+
+  char updated[6];
 };
 
-// use Board "ESP32 Dev Module" to build with Arduino IDE
+
 void setup() {
   Serial.begin(115200);
   display.init(115200);
@@ -77,10 +74,14 @@ void setup() {
   print_wakeup_reason();
   
   display.setRotation(1);
+}
 
-  uint64_t sleepTime = HOUR;
+void loop() {
+    uint64_t sleepTime = HOUR;
   
-  if (connectToWifi()) {
+  if (!connectToWifi()) {
+    displayCenteredText("Can’t connect to wifi");
+  } else {    
     boolean jsonParsed = getJSON(URL);
     if (!jsonParsed) {
       displayCenteredText("Error getting JSON");
@@ -90,162 +91,135 @@ void setup() {
       displayWeather(&weather);
       if (weather.updated[0] == '0' && weather.updated[1] == '0') sleepTime = HOUR * 6; // sleep for the night
     }
-  } else {
-    displayCenteredText("Can’t connect to wifi");
   }
 
   sleep(sleepTime);
-}
 
-void loop() {
-  Serial.println("loop should never be called because it should sleep");
-  delay(MINUTE);
+  Serial.println("After sleep, that line should never be printed");
+  delay(HOUR);
 }
 
 void displayWeather(Weather* weather) {
   display.fillScreen(GxEPD_WHITE);
-
-  char* tempMorning = weather->todayTempMorning;
-  char* tempDay = weather->todayTempDay;
-  char* tempEve = weather->todayTempEve;
-  char* humidity = weather->todayHumidity;
-  char* main = weather->todayMain;
-  char* description = weather->todayDescription;
-  char* icon = weather->todayIcon;
-  char* updated = weather->updated;
-
   display.firstPage();
   do
   {
-    if (strcmp(icon, "01d") == 0) {
-      // 01d - Sun
-      display.drawBitmap(0, 0, icon_01d_sun_bits, icon_01d_sun_width, icon_01d_sun_height, GxEPD_RED);
-    } else if (strcmp(icon, "01n") == 0) {
-      // 01d - Sun - night
-      display.drawBitmap(0, 0, icon_01d_sun_bits, icon_01d_sun_width, icon_01d_sun_height, GxEPD_BLACK);
-    } else if (strcmp(icon, "02d") == 0) {
-      // 02d - Cloud, sun
-      display.drawBitmap(0, 0, icon_02d_sun_bits, icon_02d_sun_width, icon_02d_sun_height, GxEPD_RED);
-      display.drawBitmap(0, 0, icon_02d_cloud_bits, icon_02d_cloud_width, icon_02d_cloud_height, GxEPD_BLACK);
-    } else if (strcmp(icon, "02n") == 0) {
-      // 02d - Cloud, sun - night
-      display.drawBitmap(0, 0, icon_02d_sun_bits, icon_02d_sun_width, icon_02d_sun_height, GxEPD_BLACK);
-      display.drawBitmap(0, 0, icon_02d_cloud_bits, icon_02d_cloud_width, icon_02d_cloud_height, GxEPD_BLACK);
-    } else if (strcmp(icon, "03d") == 0 || strcmp(icon, "03n") == 0) {
-      // 03d - Cloud
-      display.drawBitmap(0, 0, icon_03d_cloud_bits, icon_03d_cloud_width, icon_03d_cloud_height, GxEPD_BLACK);
-    } else if (strcmp(icon, "04d") == 0) {
-      // 04d - Cloud, second cloud
-      display.drawBitmap(0, 0, icon_04d_cloud_bits, icon_04d_cloud_width, icon_04d_cloud_height, GxEPD_BLACK);
-      display.drawBitmap(0, 0, icon_04d_cloud_back_bits, icon_04d_cloud_back_width, icon_04d_cloud_back_height, GxEPD_RED);
-    } else if (strcmp(icon, "04n") == 0) {
-      // 04d - Cloud, second cloud - night
-      display.drawBitmap(0, 0, icon_04d_cloud_bits, icon_04d_cloud_width, icon_04d_cloud_height, GxEPD_BLACK);
-      display.drawBitmap(0, 0, icon_04d_cloud_back_bits, icon_04d_cloud_back_width, icon_04d_cloud_back_height, GxEPD_BLACK);
-    } else if (strcmp(icon, "09d") == 0) {
-      // 09d - Clouds, rain
-      display.drawBitmap(0, 0, icon_09d_cloud_bits, icon_09d_cloud_width, icon_09d_cloud_height, GxEPD_BLACK);
-      display.drawBitmap(0, 0, icon_09d_rain_bits, icon_09d_rain_width, icon_09d_rain_height, GxEPD_RED);
-    } else if (strcmp(icon, "09n") == 0) {
-      // 09d - Clouds, rain - night
-      display.drawBitmap(0, 0, icon_09d_cloud_bits, icon_09d_cloud_width, icon_09d_cloud_height, GxEPD_BLACK);
-      display.drawBitmap(0, 0, icon_09d_rain_bits, icon_09d_rain_width, icon_09d_rain_height, GxEPD_BLACK);
-    } else if (strcmp(icon, "10d") == 0) {
-      // 10d - Clouds, sun, rain
-      display.drawBitmap(0, 0, icon_10d_cloud_bits, icon_10d_cloud_width, icon_10d_cloud_height, GxEPD_BLACK);
-      display.drawBitmap(0, 0, icon_10d_sun_bits, icon_10d_sun_width, icon_10d_sun_height, GxEPD_RED);
-    } else if (strcmp(icon, "10n") == 0) {
-      // 10d - Clouds, sun, rain - night
-      display.drawBitmap(0, 0, icon_10d_cloud_bits, icon_10d_cloud_width, icon_10d_cloud_height, GxEPD_BLACK);
-      display.drawBitmap(0, 0, icon_10d_sun_bits, icon_10d_sun_width, icon_10d_sun_height, GxEPD_BLACK);
-    } else if (strcmp(icon, "11d") == 0) {
-      // 11d - Clouds, lightning
-      display.drawBitmap(0, 0, icon_11d_cloud_bits, icon_11d_cloud_width, icon_11d_cloud_height, GxEPD_BLACK);
-      display.drawBitmap(0, 0, icon_11d_ligthning_bits, icon_11d_ligthning_width, icon_11d_ligthning_height, GxEPD_RED);
-    } else if (strcmp(icon, "11n") == 0) {
-      // 11d - Clouds, lightning - night
-      display.drawBitmap(0, 0, icon_11d_cloud_bits, icon_11d_cloud_width, icon_11d_cloud_height, GxEPD_BLACK);
-      display.drawBitmap(0, 0, icon_11d_ligthning_bits, icon_11d_ligthning_width, icon_11d_ligthning_height, GxEPD_BLACK);
-    } else if (strcmp(icon, "13d") == 0 || strcmp(icon, "13n") == 0) {
-      // 13d - Snow
-      display.drawBitmap(0, 0, icon_13d_snow_bits, icon_13d_snow_width, icon_13d_snow_height, GxEPD_BLACK);
-    } else if (strcmp(icon, "50d") == 0 ||strcmp(icon, "50n") == 0) {
-      // 50d - Fog
-      display.drawBitmap(0, 0, icon_50d_fog_bits, icon_50d_fog_width, icon_50d_fog_height, GxEPD_BLACK);
-    }
-
-    // Temp (feels like morning)
-    display.setFont(&FreeMonoBold12pt7b);
-    display.setTextColor(GxEPD_BLACK);
-    display.setCursor(90, 20);
-    display.println(tempMorning);
-
-    // Temp (feels like eve)
-    display.setFont(&FreeMonoBold12pt7b);
-    display.setTextColor(GxEPD_BLACK);
-    display.setCursor(90, 45);
-    display.println(tempEve);
-
-    // Temp (feels like day)
-    display.setFont(&FreeMonoBold18pt7b);
-    display.setTextColor(GxEPD_BLACK);
-    display.setCursor(120, 85);
-    display.println(tempDay);
-
-    // Description
-    display.setFont(&FreeMonoBold12pt7b);
-    display.setTextColor(GxEPD_BLACK);
-    int16_t tbx, tby; uint16_t tbw, tbh;
-    display.getTextBounds(description, 0, 0, &tbx, &tby, &tbw, &tbh);
-    uint16_t x = ((display.width() - tbw) / 2) - tbx;
-    display.setCursor(x, 120);
-    display.println(description);
-
-    // Humidity
-    display.setFont(&FreeMonoBold12pt7b);
-    display.setTextColor(GxEPD_BLACK);
-    display.setCursor(10, 170);
-    display.println(humidity);
-
-    // Updated time
-    display.setFont(&FreeMonoBold9pt7b);
-    display.setTextColor(GxEPD_BLACK);
-    display.setCursor(200, 170);
-    display.println(updated);
-
+    displayDayMinMax(5, "H+1", weather->iconH1, weather->tempH1, weather->feelsLikeH1, weather->humidityH1);
+    displayDayMinMax(95, "J+1", weather->iconD1, weather->tempMinD1, weather->tempMaxD1, weather->humidityD1);
+    displayDayMinMax(185, "J+2", weather->iconD2, weather->tempMinD2, weather->tempMaxD2, weather->humidityD2);
+    drawSmallText(208, 174, weather->updated);
   } while (display.nextPage());
 }
 
+void displayDayMinMax(int x, char* title, char* icon, char* tempMin, char* tempMax, char* humidity) {
+  drawBigText(x + 5, 30, title);
+  drawIcon(x, 30, icon);
+  drawText(x + 10, 116, tempMax, GxEPD_RED);
+  drawText(x + 10, 138, tempMin, GxEPD_BLACK);
+  drawSmallText(x + 25, 156, humidity);
+}
+
+void drawText(int x, int y, char* text, int color) {
+  display.setFont(&FreeMonoBold12pt7b);
+  display.setTextColor(color);
+  display.setCursor(x, y);
+  display.println(text);
+}
+
+void drawSmallText(int x, int y, char* text) {
+  // Updated time
+  display.setFont(&FreeMonoBold9pt7b);
+  display.setTextColor(GxEPD_BLACK);
+  display.setCursor(x, y);
+  display.println(text);
+}
+
+void drawBigText(int x, int y, char* text) {
+  display.setFont(&FreeMonoBold18pt7b);
+  display.setTextColor(GxEPD_BLACK);
+  display.setCursor(x, y);
+  display.println(text);
+}
+
+void drawIcon(int x, int y, char* icon) {
+  if (strcmp(icon, "01d") == 0) {
+    // 01d - Sun
+    display.drawBitmap(x, y, icon_01d_sun_bits, icon_01d_sun_width, icon_01d_sun_height, GxEPD_RED);
+  } else if (strcmp(icon, "01n") == 0) {
+    // 01d - Sun - night
+    display.drawBitmap(x, y, icon_01d_sun_bits, icon_01d_sun_width, icon_01d_sun_height, GxEPD_BLACK);
+  } else if (strcmp(icon, "02d") == 0) {
+    // 02d - Cloud, sun
+    display.drawBitmap(x, y, icon_02d_sun_bits, icon_02d_sun_width, icon_02d_sun_height, GxEPD_RED);
+    display.drawBitmap(x, y, icon_02d_cloud_bits, icon_02d_cloud_width, icon_02d_cloud_height, GxEPD_BLACK);
+  } else if (strcmp(icon, "02n") == 0) {
+    // 02d - Cloud, sun - night
+    display.drawBitmap(x, y, icon_02d_sun_bits, icon_02d_sun_width, icon_02d_sun_height, GxEPD_BLACK);
+    display.drawBitmap(x, y, icon_02d_cloud_bits, icon_02d_cloud_width, icon_02d_cloud_height, GxEPD_BLACK);
+  } else if (strcmp(icon, "03d") == 0 || strcmp(icon, "03n") == 0) {
+    // 03d - Cloud
+    display.drawBitmap(x, y, icon_03d_cloud_bits, icon_03d_cloud_width, icon_03d_cloud_height, GxEPD_BLACK);
+  } else if (strcmp(icon, "04d") == 0) {
+    // 04d - Cloud, second cloud
+    display.drawBitmap(x, y, icon_04d_cloud_bits, icon_04d_cloud_width, icon_04d_cloud_height, GxEPD_BLACK);
+    display.drawBitmap(x, y, icon_04d_cloud_back_bits, icon_04d_cloud_back_width, icon_04d_cloud_back_height, GxEPD_RED);
+  } else if (strcmp(icon, "04n") == 0) {
+    // 04d - Cloud, second cloud - night
+    display.drawBitmap(x, y, icon_04d_cloud_bits, icon_04d_cloud_width, icon_04d_cloud_height, GxEPD_BLACK);
+    display.drawBitmap(x, y, icon_04d_cloud_back_bits, icon_04d_cloud_back_width, icon_04d_cloud_back_height, GxEPD_BLACK);
+  } else if (strcmp(icon, "09d") == 0) {
+    // 09d - Clouds, rain
+    display.drawBitmap(x, y, icon_09d_cloud_bits, icon_09d_cloud_width, icon_09d_cloud_height, GxEPD_BLACK);
+    display.drawBitmap(x, y, icon_09d_rain_bits, icon_09d_rain_width, icon_09d_rain_height, GxEPD_RED);
+  } else if (strcmp(icon, "09n") == 0) {
+    // 09d - Clouds, rain - night
+    display.drawBitmap(x, y, icon_09d_cloud_bits, icon_09d_cloud_width, icon_09d_cloud_height, GxEPD_BLACK);
+    display.drawBitmap(x, y, icon_09d_rain_bits, icon_09d_rain_width, icon_09d_rain_height, GxEPD_BLACK);
+  } else if (strcmp(icon, "10d") == 0) {
+    // 10d - Clouds, sun, rain
+    display.drawBitmap(x, y, icon_10d_cloud_bits, icon_10d_cloud_width, icon_10d_cloud_height, GxEPD_BLACK);
+    display.drawBitmap(x, y, icon_10d_sun_bits, icon_10d_sun_width, icon_10d_sun_height, GxEPD_RED);
+  } else if (strcmp(icon, "10n") == 0) {
+    // 10d - Clouds, sun, rain - night
+    display.drawBitmap(x, y, icon_10d_cloud_bits, icon_10d_cloud_width, icon_10d_cloud_height, GxEPD_BLACK);
+    display.drawBitmap(x, y, icon_10d_sun_bits, icon_10d_sun_width, icon_10d_sun_height, GxEPD_BLACK);
+  } else if (strcmp(icon, "11d") == 0) {
+    // 11d - Clouds, lightning
+    display.drawBitmap(x, y, icon_11d_cloud_bits, icon_11d_cloud_width, icon_11d_cloud_height, GxEPD_BLACK);
+    display.drawBitmap(x, y, icon_11d_ligthning_bits, icon_11d_ligthning_width, icon_11d_ligthning_height, GxEPD_RED);
+  } else if (strcmp(icon, "11n") == 0) {
+    // 11d - Clouds, lightning - night
+    display.drawBitmap(x, y, icon_11d_cloud_bits, icon_11d_cloud_width, icon_11d_cloud_height, GxEPD_BLACK);
+    display.drawBitmap(x, y, icon_11d_ligthning_bits, icon_11d_ligthning_width, icon_11d_ligthning_height, GxEPD_BLACK);
+  } else if (strcmp(icon, "13d") == 0 || strcmp(icon, "13n") == 0) {
+    // 13d - Snow
+    display.drawBitmap(x, y, icon_13d_snow_bits, icon_13d_snow_width, icon_13d_snow_height, GxEPD_BLACK);
+  } else if (strcmp(icon, "50d") == 0 ||strcmp(icon, "50n") == 0) {
+    // 50d - Fog
+    display.drawBitmap(x, y, icon_50d_fog_bits, icon_50d_fog_width, icon_50d_fog_height, GxEPD_BLACK);
+  }
+}
+
 void fillWeatherFromJson(Weather* weather) {
+  sprintf(weather->iconH1, "%s", (const char*) json["hourly"][1]["weather"][0]["icon"]);
+  sprintf(weather->tempH1, "%i C", (int) round(json["hourly"][1]["temp"]));
+  sprintf(weather->feelsLikeH1, "%i C", (int) round(json["hourly"][1]["feels_like"]));
+  sprintf(weather->humidityH1, "%i %%", (int) json["hourly"][1]["humidity"]);
+
+  sprintf(weather->iconD1, "%s", (const char*) json["daily"][1]["weather"][0]["icon"]);
+  sprintf(weather->tempMinD1, "%i C", (int) round(json["daily"][1]["temp"]["min"]));
+  sprintf(weather->tempMaxD1, "%i C", (int) round(json["daily"][1]["temp"]["max"]));
+  sprintf(weather->humidityD1, "%i %%", (int) json["daily"][1]["humidity"]);
+
+  sprintf(weather->iconD2, "%s", (const char*) json["daily"][2]["weather"][0]["icon"]);
+  sprintf(weather->tempMinD2, "%i C", (int) round(json["daily"][2]["temp"]["min"]));
+  sprintf(weather->tempMaxD2, "%i C", (int) round(json["daily"][2]["temp"]["max"]));
+  sprintf(weather->humidityD2, "%i %%", (int) json["daily"][2]["humidity"]);
+
   int timezone_offset = (int) json["timezone_offset"];
   int dt = (int) json["current"]["dt"];
   int t = dt + timezone_offset;
   sprintf(weather->updated, "%02d:%02d", hour(t), minute(t));
-  sprintf(weather->temp, "%.1f C", (double) json["current"]["temp"]);
-  sprintf(weather->feelslike, "%.1f C", (double) json["current"]["feels_like"]);
-  sprintf(weather->humidity, "%i %%", (int) json["current"]["humidity"]);
-  sprintf(weather->main, "%s", (const char*) json["current"]["weather"][0]["main"]);
-  sprintf(weather->description, "%s", (const char*) json["current"]["weather"][0]["description"]);
-  sprintf(weather->icon, "%s", (const char*) json["current"]["weather"][0]["icon"]);
-
-  sprintf(weather->todayTempMorning, "Morn: %.1f C", (double) json["daily"][0]["temp"]["morn"]);
-  sprintf(weather->todayTempDay, "%.1f C", (double) json["daily"][0]["temp"]["day"]);
-  sprintf(weather->todayTempEve, " Eve: %.1f C", (double) json["daily"][0]["temp"]["eve"]);
-  sprintf(weather->todayTempNight, "Night: %.1f C", (double) json["daily"][0]["temp"]["night"]);
-  sprintf(weather->todayFeelslikeMorning, "Morn: %.1f C", (double) json["daily"][0]["feels_like"]["morn"]);
-  sprintf(weather->todayFeelslikeDay, "%.1f C", (double) json["daily"][0]["feels_like"]["day"]);
-  sprintf(weather->todayFeelslikeEve, " Eve: %.1f C", (double) json["daily"][0]["feels_like"]["eve"]);
-  sprintf(weather->todayFeelslikeNight, "Night: %.1f C", (double) json["daily"][0]["feels_like"]["night"]);
-  sprintf(weather->todayHumidity, "Humi: %i %%", (int) json["daily"][0]["humidity"]);
-  sprintf(weather->todayMain, "%s", (const char*) json["daily"][0]["weather"][0]["main"]);
-  sprintf(weather->todayDescription, "%s", (const char*) json["daily"][0]["weather"][0]["description"]);
-  sprintf(weather->todayIcon, "%s", (const char*) json["daily"][0]["weather"][0]["icon"]);
-
-  char buf[256];
-  sprintf(buf, "debug now: %s / %s / %s \n %s / %s / %s", weather->feelslike, weather->humidity, weather->updated, weather->main, weather->icon, weather->description);
-  Serial.println(buf);
-  sprintf(buf, "debug today: %s / %s / %s / %s \n %s / %s / %s / %s", weather->todayTempMorning, weather->todayTempDay, weather->todayTempEve, weather->todayTempNight, weather->todayHumidity, weather->main, weather->icon, weather->description);
-  Serial.println(buf);
 }
 
 void displayCenteredText(char* text) {

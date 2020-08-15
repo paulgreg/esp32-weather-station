@@ -111,11 +111,11 @@ void displayWeather(Weather* weather) {
   } while (display.nextPage());
 }
 
-void displayDayMinMax(int x, char* title, char* icon, char* tempMin, char* tempMax, char* humidity) {
+void displayDayMinMax(int x, char* title, char* icon, char* temp1, char* temp2, char* humidity) {
   drawBigText(x + 5, 30, title);
   drawIcon(x, 30, icon);
-  drawText(x + 10, 116, tempMax, GxEPD_RED);
-  drawText(x + 10, 138, tempMin, GxEPD_BLACK);
+  drawText(x + 10, 116, temp1, GxEPD_BLACK);
+  drawText(x + 10, 138, temp2, GxEPD_RED);
   drawSmallText(x + 25, 156, humidity);
 }
 

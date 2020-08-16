@@ -48,15 +48,15 @@ struct Weather {
   char feelsLikeH1[5];
   char humidityH1[5];
 
+  char iconD[10];
+  char tempMinD[5];
+  char tempMaxD[5];
+  char humidityD[5];
+
   char iconD1[10];
   char tempMinD1[5];
   char tempMaxD1[5];
   char humidityD1[5];
-
-  char iconD2[10];
-  char tempMinD2[5];
-  char tempMaxD2[5];
-  char humidityD2[5];
 
   char updated[6];
 };
@@ -105,14 +105,15 @@ void displayWeather(Weather* weather) {
   do
   {
     displayDayMinMax(5, "H+1", weather->iconH1, weather->tempH1, weather->feelsLikeH1, weather->humidityH1);
-    displayDayMinMax(95, "J+1", weather->iconD1, weather->tempMinD1, weather->tempMaxD1, weather->humidityD1);
-    displayDayMinMax(185, "J+2", weather->iconD2, weather->tempMinD2, weather->tempMaxD2, weather->humidityD2);
+    displayDayMinMax(95, "J", weather->iconD, weather->tempMinD, weather->tempMaxD, weather->humidityD);
+    displayDayMinMax(185, "J+1", weather->iconD1, weather->tempMinD1, weather->tempMaxD1, weather->humidityD1);
     drawSmallText(208, 174, weather->updated);
   } while (display.nextPage());
 }
 
 void displayDayMinMax(int x, char* title, char* icon, char* temp1, char* temp2, char* humidity) {
-  drawBigText(x + 5, 30, title);
+  int offsetTitle = strlen(title) == 1 ? 32 : 10;
+  drawBigText(x + offsetTitle, 30, title);
   drawIcon(x, 30, icon);
   drawText(x + 10, 116, temp1, GxEPD_BLACK);
   drawText(x + 10, 138, temp2, GxEPD_RED);
@@ -206,15 +207,15 @@ void fillWeatherFromJson(Weather* weather) {
   sprintf(weather->feelsLikeH1, "%i C", (int) round(json["hourly"][1]["feels_like"]));
   sprintf(weather->humidityH1, "%i %%", (int) json["hourly"][1]["humidity"]);
 
+  sprintf(weather->iconD, "%s", (const char*) json["daily"][0]["weather"][0]["icon"]);
+  sprintf(weather->tempMinD, "%i C", (int) round(json["daily"][0]["temp"]["min"]));
+  sprintf(weather->tempMaxD, "%i C", (int) round(json["daily"][0]["temp"]["max"]));
+  sprintf(weather->humidityD, "%i %%", (int) json["daily"][0]["humidity"]);
+
   sprintf(weather->iconD1, "%s", (const char*) json["daily"][1]["weather"][0]["icon"]);
   sprintf(weather->tempMinD1, "%i C", (int) round(json["daily"][1]["temp"]["min"]));
   sprintf(weather->tempMaxD1, "%i C", (int) round(json["daily"][1]["temp"]["max"]));
   sprintf(weather->humidityD1, "%i %%", (int) json["daily"][1]["humidity"]);
-
-  sprintf(weather->iconD2, "%s", (const char*) json["daily"][2]["weather"][0]["icon"]);
-  sprintf(weather->tempMinD2, "%i C", (int) round(json["daily"][2]["temp"]["min"]));
-  sprintf(weather->tempMaxD2, "%i C", (int) round(json["daily"][2]["temp"]["max"]));
-  sprintf(weather->humidityD2, "%i %%", (int) json["daily"][2]["humidity"]);
 
   int timezone_offset = (int) json["timezone_offset"];
   int dt = (int) json["current"]["dt"];

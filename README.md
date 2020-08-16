@@ -17,7 +17,7 @@ Hardware components are :
 
 use Board "ESP32 Dev Module" to build with Arduino IDE.
 
-Copy `parameters.h.dist` to `parameters.h` and update it with your wifi settings and update the URL.
+Copy `parameters.h.dist` to `parameters.h` and update it with your wifi settings and update the URL (you need to change lat/lng and set your OpenWeatherMap API token).
 
 I’m using the nice [GxEPD2](https://github.com/ZinggJM/GxEPD2) library from [ZinggJM](https://github.com/ZinggJM). Thanks
 

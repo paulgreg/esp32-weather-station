@@ -44,7 +44,7 @@ void setup() {
 }
 
 void loop() {
-    uint64_t sleepTime = HOUR;
+   uint64_t sleepTime = HOUR;
   
   if (!connectToWifi()) {
     displayCenteredText("Can’t connect to wifi");

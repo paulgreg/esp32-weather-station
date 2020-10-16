@@ -20,10 +20,10 @@ void drawText(int x, int y, char* text, int color) {
   display.println(text);
 }
 
-void drawSmallText(int x, int y, char* text) {
+void drawSmallText(int x, int y, char* text, int color) {
   // Updated time
   display.setFont(&FreeMonoBold9pt7b);
-  display.setTextColor(GxEPD_BLACK);
+  display.setTextColor(color);
   display.setCursor(x, y);
   display.println(text);
 }
@@ -99,8 +99,8 @@ void displayDayMinMax(int x, char* title, char* icon, char* temp1, char* temp2, 
   drawBigText(x + offsetTitle, 28, title);
   drawIcon(x, 28, icon);
   drawText(x + 10, 114, temp1, GxEPD_BLACK);
-  drawText(x + 10, 136, temp2, GxEPD_RED);
-  drawSmallText(x + 16, 155, humidity);
+  drawText(x + 10, 136, temp2, GxEPD_BLACK);
+  drawSmallText(x + 16, 155, humidity, GxEPD_RED);
 }
 
 void displayWeather(Weather* weather) {
@@ -111,7 +111,7 @@ void displayWeather(Weather* weather) {
     displayDayMinMax(5, "H+1", weather->iconH1, weather->feelsLikeH1, weather->tempH1, weather->humidityH1);
     displayDayMinMax(95, "J", weather->iconD, weather->tempMinD, weather->tempMaxD, weather->humidityD);
     displayDayMinMax(185, "J+1", weather->iconD1, weather->tempMinD1, weather->tempMaxD1, weather->humidityD1);
-    drawSmallText(35, 174, weather->updated);
+    drawSmallText(35, 174, weather->updated, GxEPD_BLACK);
   } while (display.nextPage());
 }
 

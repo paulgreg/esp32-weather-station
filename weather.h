@@ -2,17 +2,17 @@ struct Weather {
   char iconH1[10];
   char tempH1[5];
   char feelsLikeH1[5];
-  char humidityH1[5];
+  char humidityH1[6];
 
   char iconD[10];
   char tempMinD[5];
   char tempMaxD[5];
-  char humidityD[5];
+  char humidityD[6];
 
   char iconD1[10];
   char tempMinD1[5];
   char tempMaxD1[5];
-  char humidityD1[5];
+  char humidityD1[6];
 
   char updated[20];
 };

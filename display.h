@@ -100,7 +100,7 @@ void displayDayMinMax(int x, char* title, char* icon, char* temp1, char* temp2, 
   drawIcon(x, 28, icon);
   drawText(x + 10, 114, temp1, GxEPD_BLACK);
   drawText(x + 10, 136, temp2, GxEPD_BLACK);
-  drawSmallText(x + 16, 155, humidity, GxEPD_RED);
+  drawSmallText(x + 16, 155, humidity, GxEPD_BLACK);
 }
 
 void displayWeather(Weather* weather) {
@@ -111,7 +111,7 @@ void displayWeather(Weather* weather) {
     displayDayMinMax(5, "H+1", weather->iconH1, weather->feelsLikeH1, weather->tempH1, weather->humidityH1);
     displayDayMinMax(95, "J", weather->iconD, weather->tempMinD, weather->tempMaxD, weather->humidityD);
     displayDayMinMax(185, "J+1", weather->iconD1, weather->tempMinD1, weather->tempMaxD1, weather->humidityD1);
-    drawSmallText(35, 174, weather->updated, GxEPD_BLACK);
+    drawSmallText(35, 174, weather->updated, GxEPD_RED);
   } while (display.nextPage());
 }
 

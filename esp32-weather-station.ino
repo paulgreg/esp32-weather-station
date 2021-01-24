@@ -67,7 +67,6 @@ void loop() {
 }
 
 void sleep(uint64_t sleepTime) {
-//  esp_sleep_disable_wakeup_source(ESP_SLEEP_WAKEUP_TOUCHPAD); // disable wake up from touch pad
   Serial.flush();
   display.powerOff();
   esp_sleep_enable_timer_wakeup((uint64_t) sleepTime * MICRO_SEC_TO_MILLI_SEC_FACTOR);

@@ -22,6 +22,10 @@ boolean connectToWifi() {
   return true;
 }
 
+boolean disconnectFromWifi() {
+  WiFi.disconnect();
+}
+
 boolean getJSON(const char* url) {
   boolean success = false;
    

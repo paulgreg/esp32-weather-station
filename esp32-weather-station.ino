@@ -58,6 +58,7 @@ void loop() {
       displayWeather(&weather);
       if (weather.updated[0] == '0' && weather.updated[1] == '0') sleepTime = HOUR * 6; // sleep for the night
     }
+    disconnectFromWifi();
   }
 
   sleep(sleepTime);

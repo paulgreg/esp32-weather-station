@@ -2,9 +2,6 @@
 
 #include <GxEPD2_BW.h>
 #include <GxEPD2_3C.h>
-#include <Fonts/FreeMonoBold9pt7b.h>
-#include <Fonts/FreeMonoBold12pt7b.h>
-#include <Fonts/FreeMonoBold18pt7b.h>
 
 GxEPD2_3C<GxEPD2_270c, GxEPD2_270c::HEIGHT> display(GxEPD2_270c(/*CS=*/ 15, /*DC=*/ 27, /*RST=*/ 26, /*BUSY=*/ 25));
 
@@ -47,7 +44,7 @@ void loop() {
    uint64_t sleepTime = HOUR;
   
   if (!connectToWifi()) {
-    displayCenteredText("Can’t connect to wifi");
+    displayCenteredText("Can't connect to wifi");
   } else {    
     boolean jsonParsed = getJSON(URL);
     if (!jsonParsed) {

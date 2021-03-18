@@ -26,7 +26,6 @@ I’m using the nice [GxEPD2](https://github.com/ZinggJM/GxEPD2) library from [Z
   * https://openweathermap.org/api/one-call-api
   * create an account and an API KEY
 
-
 ## Icons
 
 Icons are [official icons from OpenWeatherMap](https://openweathermap.org/weather-conditions#How-to-get-icon-URL).
@@ -34,6 +33,9 @@ Icons are [official icons from OpenWeatherMap](https://openweathermap.org/weathe
 To be able to open them correctly in GxEPD2, I convert them using [LCD Assistant](http://en.radzio.dxp.pl/bitmap_converter/) with byte orientation set to horizontal and big endian settings.
 It can be opened via wine (by adding 32 bits architecture).
 
+## Fonts
+
+Fonts are from [Adafruit-GFX-Library-fontconvert](https://github.com/paulgreg/Adafruit-GFX-Library-fontconvert) project.
 
 ## HTTP request & JSON parsing
 

@@ -13,25 +13,49 @@
 #include "icons/13d-snow.h"
 #include "icons/50d-fog.h"
 
-void drawText(int x, int y, char* text, int color) {
-  display.setFont(&FreeMonoBold12pt7b);
+#include "Fonts/Cantarell_Regular_euro8pt8b.h"
+#include "Fonts/Cantarell_Bold_euro9pt8b.h"
+#include "Fonts/Cantarell_Bold_euro14pt8b.h"
+#include "Fonts/Cantarell_Bold_euro16pt8b.h"
+
+#define FONT_TINY Cantarell_Regular_euro8pt8b
+#define FONT_SMALL Cantarell_Bold_euro9pt8b
+#define FONT_NORMAL Cantarell_Bold_euro14pt8b
+#define FONT_BIG Cantarell_Bold_euro16pt8b
+
+void drawTinyTextRightAlign(int x, int y, char* text, int color) {
+  display.setFont(&FONT_TINY);
   display.setTextColor(color);
-  display.setCursor(x, y);
+  int16_t tbx, tby; uint16_t tbw, tbh;
+  display.getTextBounds(text, 0, 0, &tbx, &tby, &tbw, &tbh);
+  display.setCursor(x - tbw, y);
   display.println(text);
 }
 
-void drawSmallText(int x, int y, char* text, int color) {
-  // Updated time
-  display.setFont(&FreeMonoBold9pt7b);
+void drawSmallTextCenterAlign(int x, int y, char* text, int color) {
+  display.setFont(&FONT_SMALL);
   display.setTextColor(color);
-  display.setCursor(x, y);
+  int16_t tbx, tby; uint16_t tbw, tbh;
+  display.getTextBounds(text, 0, 0, &tbx, &tby, &tbw, &tbh);
+  display.setCursor(x - (tbw / 2), y);
   display.println(text);
 }
 
-void drawBigText(int x, int y, char* text) {
-  display.setFont(&FreeMonoBold18pt7b);
+void drawTextCenterAlign(int x, int y, char* text, int color) {
+  display.setFont(&FONT_NORMAL);
+  display.setTextColor(color);
+  int16_t tbx, tby; uint16_t tbw, tbh;
+  display.getTextBounds(text, 0, 0, &tbx, &tby, &tbw, &tbh);
+  display.setCursor(x - (tbw / 2), y);
+  display.println(text);
+}
+
+void drawBigTextCenterAlign(int x, int y, char* text) {
+  display.setFont(&FONT_BIG);
   display.setTextColor(GxEPD_BLACK);
-  display.setCursor(x, y);
+  int16_t tbx, tby; uint16_t tbw, tbh;
+  display.getTextBounds(text, 0, 0, &tbx, &tby, &tbw, &tbh);
+  display.setCursor(x - (tbw / 2), y);
   display.println(text);
 }
 
@@ -95,12 +119,12 @@ void drawIcon(int x, int y, char* icon) {
 }
 
 void displayDayMinMax(int x, char* title, char* icon, char* temp1, char* temp2, char* humidity) {
-  int offsetTitle = strlen(title) == 1 ? 32 : 10;
-  drawBigText(x + offsetTitle, 28, title);
-  drawIcon(x, 28, icon);
-  drawText(x + 10, 114, temp1, GxEPD_BLACK);
-  drawText(x + 10, 136, temp2, GxEPD_BLACK);
-  drawSmallText(x + 16, 155, humidity, GxEPD_BLACK);
+  int centerOffset = 38;
+  drawBigTextCenterAlign(x + centerOffset, 28, title);
+  drawIcon(x, 22, icon);
+  drawTextCenterAlign(x + centerOffset, 112, temp1, GxEPD_BLACK);
+  drawTextCenterAlign(x + centerOffset, 138, temp2, GxEPD_BLACK);
+  drawSmallTextCenterAlign(x + centerOffset, 157, humidity, GxEPD_BLACK);
 }
 
 void displayWeather(Weather* weather) {
@@ -111,41 +135,24 @@ void displayWeather(Weather* weather) {
     displayDayMinMax(5, "H+1", weather->iconH1, weather->feelsLikeH1, weather->tempH1, weather->humidityH1);
     displayDayMinMax(95, "J", weather->iconD, weather->tempMinD, weather->tempMaxD, weather->humidityD);
     displayDayMinMax(185, "J+1", weather->iconD1, weather->tempMinD1, weather->tempMaxD1, weather->humidityD1);
-    drawSmallText(35, 174, weather->updated, GxEPD_BLACK);
+    drawTinyTextRightAlign(258, 173, weather->updated, GxEPD_BLACK);
   } while (display.nextPage());
 }
 
 void displayCenteredText(char* text) {
-  display.setFont(&FreeMonoBold9pt7b);
+  display.setFont(&FONT_SMALL);
   display.setTextColor(GxEPD_BLACK);
-  int16_t tbx, tby; uint16_t tbw, tbh; // boundary box window
-  display.getTextBounds(text, 0, 0, &tbx, &tby, &tbw, &tbh); // it works for origin 0, 0, fortunately (negative tby!)
-  // center bounding box by transposition of origin:
+  int16_t tbx, tby; uint16_t tbw, tbh;
+  display.getTextBounds(text, 0, 0, &tbx, &tby, &tbw, &tbh);
   uint16_t x = ((display.width() - tbw) / 2) - tbx;
   uint16_t y = ((display.height() - tbh) / 2) - tby;
-  // full window mode is the initial mode, set it anyway
   display.setFullWindow();
-  // here we use paged drawing, even if the processor has enough RAM for full buffer
-  // so this can be used with any supported processor board.
-  // the cost in code overhead and execution time penalty is marginal
-  // tell the graphics class to use paged drawing mode
   display.firstPage();
   do
   {
-    // this part of code is executed multiple times, as many as needed,
-    // in case of full buffer it is executed once
-    // IMPORTANT: each iteration needs to draw the same, to avoid strange effects
-    // use a copy of values that might change, don't read e.g. from analog or pins in the loop!
-    display.fillScreen(GxEPD_WHITE); // set the background to white (fill the buffer with value for white)
-    display.setCursor(x, y); // set the postition to start printing text
-    display.print(text); // print some text
-    // end of part executed multiple times
+    display.fillScreen(GxEPD_WHITE);
+    display.setCursor(x, y);
+    display.print(text);
   }
-  // tell the graphics class to transfer the buffer content (page) to the controller buffer
-  // the graphics class will command the controller to refresh to the screen when the last page has been transferred
-  // returns true if more pages need be drawn and transferred
-  // returns false if the last page has been transferred and the screen refreshed for panels without fast partial update
-  // returns false for panels with fast partial update when the controller buffer has been written once more, to make the differential buffers equal
-  // (for full buffered with fast partial update the (full) buffer is just transferred again, and false returned)
   while (display.nextPage());
 }

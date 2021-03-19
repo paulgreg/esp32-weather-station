@@ -15,12 +15,12 @@
 
 #include "Fonts/Cantarell_Regular_euro8pt8b.h"
 #include "Fonts/Cantarell_Bold_euro9pt8b.h"
-#include "Fonts/Cantarell_Bold_euro14pt8b.h"
+#include "Fonts/FreeMonoBold_euro14pt8b.h"
 #include "Fonts/Cantarell_Bold_euro16pt8b.h"
 
 #define FONT_TINY Cantarell_Regular_euro8pt8b
 #define FONT_SMALL Cantarell_Bold_euro9pt8b
-#define FONT_NORMAL Cantarell_Bold_euro14pt8b
+#define FONT_NORMAL FreeMonoBold_euro14pt8b
 #define FONT_BIG Cantarell_Bold_euro16pt8b
 
 void drawTinyTextRightAlign(int x, int y, char* text, int color) {

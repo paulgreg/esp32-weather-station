@@ -4,10 +4,10 @@ boolean connectToWifi() {
 
   WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  unsigned int retries = 100;
+  unsigned int retries = 50;
   while (WiFi.status() != WL_CONNECTED && (retries-- > 0)) {
     Serial.print(".");
-    delay(500);
+    delay(1000);
   }
   if (WiFi.status() != WL_CONNECTED) {
     Serial.println("\nWifi connection failed");
@@ -17,8 +17,9 @@ boolean connectToWifi() {
   Serial.println("wifi connected");
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
+  Serial.print("DNS: ");
+  Serial.println(WiFi.dnsIP(0));
   Serial.println("");
-  WiFi.config(WiFi.localIP(), WiFi.gatewayIP(), WiFi.subnetMask(), IPAddress(9,9,9,9));
   return true;
 }
 
@@ -39,10 +40,7 @@ boolean getJSON(const char* url) {
     int httpCode = http.GET();
      Serial.print("HTTP code : ");
      Serial.println(httpCode);
-    if (httpCode <= 0) {
-      Serial.print("Error on HTTP request : ");
-      Serial.println(httpCode);
-    } else {
+    if (httpCode > 0) {
       json = JSON.parse(http.getString());
       
       if (JSON.typeof(json) == "undefined") {

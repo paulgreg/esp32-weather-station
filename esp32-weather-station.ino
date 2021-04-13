@@ -44,11 +44,16 @@ void loop() {
    uint64_t sleepTime = HOUR;
   
   if (!connectToWifi()) {
-    displayCenteredText("Can't connect to wifi");
-  } else {    
-    boolean jsonParsed = getJSON(URL);
+    displayError("Error : WIFI");
+  } else {
+    unsigned int retries = 5;
+    boolean jsonParsed = false;
+    while(!jsonParsed && (retries-- > 0)) {
+      delay(1000);
+      jsonParsed = getJSON(URL);
+    }
     if (!jsonParsed) {
-      displayCenteredText("Error getting JSON");
+      displayError("Error : JSON");
     } else {
       Weather weather;
       fillWeatherFromJson(&weather);

@@ -15,7 +15,7 @@ Hardware components are :
 
 ## Arduino env
 
-use Board "ESP32 Dev Module" to build with Arduino IDE.
+use Board "Wemos D1 mini ESP32" to build with Arduino IDE.
 
 Copy `parameters.h.dist` to `parameters.h` and update it with your wifi settings and update the URL (you need to change lat/lng and set your OpenWeatherMap API token).
 

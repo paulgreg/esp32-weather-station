@@ -13,13 +13,12 @@ GxEPD2_3C<GxEPD2_270c, GxEPD2_270c::HEIGHT> display(GxEPD2_270c(/*CS=*/ 15, /*DC
 #include <HTTPClient.h>
 #include <Arduino_JSON.h>
 
-JSONVar json;
+JSONVar weatherJson, localJson;
 
 #include "parameters.h"
 #include "weather.h"
 #include "display.h"
 #include "network.h"
-
 
 const uint64_t SECOND = 1000;
 const uint64_t MINUTE = 60 * SECOND;
@@ -28,6 +27,10 @@ const uint64_t MICRO_SEC_TO_MILLI_SEC_FACTOR = 1000;
 
 void setup() {
   Serial.begin(115200);
+  Serial.setTimeout(2000);
+  while(!Serial) {}
+  Serial.println("Weather station");
+  
   display.init(115200);
   // *** special handling for Waveshare ESP32 Driver board *** //
   SPI.end(); // release standard SPI pins, e.g. SCK(18), MISO(19), MOSI(23), SS(5)
@@ -44,22 +47,41 @@ void loop() {
    uint64_t sleepTime = HOUR;
   
   if (!connectToWifi()) {
-    displayError("Error : WIFI");
+    displayError("Error: WIFI");
   } else {
     unsigned int retries = 5;
     boolean jsonParsed = false;
     while(!jsonParsed && (retries-- > 0)) {
       delay(1000);
-      jsonParsed = getJSON(URL);
+      jsonParsed = getWeatherJSON(WEATHER_URL);
     }
     if (!jsonParsed) {
-      displayError("Error : JSON");
+      displayError("Error: JSON1");
     } else {
       Weather weather;
       fillWeatherFromJson(&weather);
       displayWeather(&weather);
+      
       if (weather.updated[0] == '0' && weather.updated[1] == '0') sleepTime = HOUR * 6; // sleep for the night
+
+      #ifdef LOCAL_URL
+      // get local temperature
+      retries = 5;
+      jsonParsed = false;
+      while(!jsonParsed && (retries-- > 0)) {
+        delay(1000);
+        jsonParsed = getLocalJSON(LOCAL_URL, LOCAL_AUTHORIZATION);
+      }
+      if (!jsonParsed) {
+        displayError("Error: JSON2");
+      } else {
+        LocalTemp localTemp;
+        fillLocalTempFromJson(&localTemp);
+        displayLocalTemp(&localTemp);
+      }
+      #endif
     }
+
     disconnectFromWifi();
   }
 

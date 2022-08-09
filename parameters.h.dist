@@ -1,4 +1,9 @@
 #define WIFI_SSID  "SSID"
 #define WIFI_PASSWORD "PASSWORD"
 
-#define URL "http://api.openweathermap.org/data/2.5/onecall?units=metric&exclude=minutely&appid={APIKEY}&lat={lat}&lon={lon}&lang=en"
+#define WEATHER_URL "http://api.openweathermap.org/data/2.5/onecall?units=metric&exclude=minutely&appid={APIKEY}&lat={lat}&lon={lon}&lang=en"
+
+// If you wan’t to display local temperature from an Oregon Scientific decice, 
+// see https://hackaday.io/project/186753-oregon-scientific-sensor-to-internet and uncomment below lines
+// #define LOCAL_URL "https://example.com/json-store/temperature/temperature.json" // JSON should contain a temp field like {temp:""}
+// #define LOCAL_AUTHORIZATION "Basic user:password-encoded-in-base64"

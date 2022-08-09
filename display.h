@@ -139,6 +139,21 @@ void displayWeather(Weather* weather) {
   } while (display.nextPage());
 }
 
+void displayLocalTemp(LocalTemp* localTemp) {
+  int x = 5;
+  int y = 100;
+  int w = 90;
+  int h = 38;
+  
+  display.setPartialWindow(x, y, w, h);
+  display.firstPage();
+  do
+  {
+    display.fillScreen(GxEPD_WHITE);
+    drawTextCenterAlign(x + 42, y + 24, localTemp->temp, GxEPD_BLACK);
+  } while (display.nextPage());
+}
+
 void displayError(char* text) {
   int x = 0;
   int y = display.height() - 20;

@@ -13,6 +13,10 @@ Hardware components are :
   * [Waveshare Universal e-Paper Raw Panel Driver Board ESP32 WiFi/Bluetooth control](https://www.ebay.fr/itm/Waveshare-2-7inch-E-Ink-Raw-Display-Panel-Three-Color-e-paper-SPI-Interface/253103850269?ssPageName=STRK%3AMEBIDX%3AIT&_trksid=p2060353.m2749.l2649)
   * [2.7inch e-Paper (B) 264x176, raw display, three-color, SPI interface](https://www.ebay.fr/itm/Waveshare-Universal-e-Paper-Raw-Panel-Driver-Board-ESP32-WiFi-Bluetooth-control/254038211273?ssPageName=STRK%3AMEBIDX%3AIT&_trksid=p2060353.m2749.l2649)
 
+
+Optionally, it can also fetch local temperature using another project, see [that oregon scientifc relay device on hackaday](https://hackaday.io/project/186753-oregon-scientific-sensor-to-internet) if you’re interested.
+
+
 ## Arduino env
 
 use Board "Wemos D1 mini ESP32" to build with Arduino IDE.

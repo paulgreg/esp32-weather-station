@@ -27,7 +27,7 @@ boolean disconnectFromWifi() {
   WiFi.disconnect();
 }
 
-boolean getJSON(const char* url) {
+boolean getWeatherJSON(const char* url) {
   boolean success = false;
    
   if ((WiFi.status() == WL_CONNECTED)) {
@@ -38,13 +38,46 @@ boolean getJSON(const char* url) {
     HTTPClient http;
     http.begin(url);
     int httpCode = http.GET();
-     Serial.print("HTTP code : ");
-     Serial.println(httpCode);
+    Serial.print("HTTP code : ");
+    Serial.println(httpCode);
     if (httpCode > 0) {
-      json = JSON.parse(http.getString());
+      weatherJson = JSON.parse(http.getString());
       
-      if (JSON.typeof(json) == "undefined") {
-        Serial.println("Parsing input failed!");
+      if (JSON.typeof(weatherJson) == "undefined") {
+        Serial.println("Parsing weatherJson input failed!");
+      } else {
+        success = true;
+      }
+    }
+    http.end();
+  }  
+  return success;
+}
+
+
+boolean getLocalJSON(const char* url, const char* authorization) {
+  boolean success = false;
+
+  WiFiClientSecure secureClient;
+  secureClient.setTimeout(20000);
+  secureClient.setInsecure();
+   
+  if ((WiFi.status() == WL_CONNECTED)) {
+
+    Serial.print("Connecting to ");
+    Serial.println(url);
+    
+    HTTPClient http;
+    http.begin(url);
+    http.addHeader("Authorization", authorization);
+    int httpCode = http.GET();
+    Serial.print("HTTP code : ");
+    Serial.println(httpCode);
+    if (httpCode > 0) {
+      localJson = JSON.parse(http.getString());
+      
+      if (JSON.typeof(localJson) == "undefined") {
+        Serial.println("Parsing localJson input failed!");
       } else {
         success = true;
       }

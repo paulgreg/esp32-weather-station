@@ -16,6 +16,7 @@ GxEPD2_3C<GxEPD2_270c, GxEPD2_270c::HEIGHT> display(GxEPD2_270c(/*CS=*/ 15, /*DC
 JSONVar weatherJson, localJson;
 
 #include "parameters.h"
+#include "temp.h"
 #include "weather.h"
 #include "display.h"
 #include "network.h"
@@ -41,22 +42,26 @@ void setup() {
   print_wakeup_reason();
   
   display.setRotation(1);
+
+  #ifdef RF_RX_PIN
+  OregonTHN128_RxBegin(RF_RX_PIN);
+  #endif
 }
 
 void loop() {
-   uint64_t sleepTime = HOUR;
-  
+  uint64_t sleepTime = HOUR;
+
   if (!connectToWifi()) {
     displayError("Error: WIFI");
   } else {
-    unsigned int retries = 5;
+    uint64_t retries = 5;
     boolean jsonParsed = false;
     while(!jsonParsed && (retries-- > 0)) {
       delay(1000);
       jsonParsed = getWeatherJSON(WEATHER_URL);
     }
     if (!jsonParsed) {
-      displayError("Error: JSON1");
+      displayError("Error:JSON");
     } else {
       Weather weather;
       fillWeatherFromJson(&weather);
@@ -64,19 +69,27 @@ void loop() {
       
       if (weather.updated[0] == '0' && weather.updated[1] == '0') sleepTime = HOUR * 6; // sleep for the night
 
-      #ifdef LOCAL_URL
-      // get local temperature
-      retries = 5;
-      jsonParsed = false;
-      while(!jsonParsed && (retries-- > 0)) {
-        delay(1000);
-        jsonParsed = getLocalJSON(LOCAL_URL, LOCAL_AUTHORIZATION);
+      #ifdef RF_RX_PIN
+      // get local temperature from oregon sensor
+      retries = 10000000;
+      boolean localTemp = false;
+      OregonTHN128Data_t oregonData;
+      
+      while(!localTemp && (retries-- > 0)) {
+        if (OregonTHN128_Available()) {    
+          Serial.println("found");
+          Serial.println(retries);
+          OregonTHN128_Read(&oregonData);
+          printReceivedData(&oregonData);
+          localTemp = true;
+          // OregonTHN128_RxEnable();
+        }
       }
-      if (!jsonParsed) {
-        displayError("Error: JSON2");
+      if (!localTemp) {
+        displayError("Error:oregon");
       } else {
         LocalTemp localTemp;
-        fillLocalTempFromJson(&localTemp);
+        fillLocalTempFromJson(&oregonData, &localTemp);
         displayLocalTemp(&localTemp);
       }
       #endif

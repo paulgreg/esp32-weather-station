@@ -14,7 +14,7 @@ Hardware components are :
   * [2.7inch e-Paper (B) 264x176, raw display, three-color, SPI interface](https://www.ebay.fr/itm/Waveshare-Universal-e-Paper-Raw-Panel-Driver-Board-ESP32-WiFi-Bluetooth-control/254038211273?ssPageName=STRK%3AMEBIDX%3AIT&_trksid=p2060353.m2749.l2649)
 
 
-Optionally, it can also fetch local temperature using another project, see [that oregon scientifc relay device on hackaday](https://hackaday.io/project/186753-oregon-scientific-sensor-to-internet) if you’re interested.
+Optionally, it can also fetch local temperature from an Oregon Scientific sensor using an RF module 433Mhz connected to PIN 5 (and update parameters.h by uncommenting a line). Thanks to wonderful [ErriezOregonTHN128](https://github.com/Erriez/ErriezOregonTHN128) library !
 
 
 ## Arduino env

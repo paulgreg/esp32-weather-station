@@ -39,6 +39,6 @@ void fillLocalTempFromJson(OregonTHN128Data_t *oregonData, LocalTemp* localTemp)
       tempAbs *= -1;
   }
 
-  sprintf(localTemp->temp, "%s%d", (negativeTemperature ? "-" : ""), (tempAbs / 10)); 
+  sprintf(localTemp->temp, "%s%d\xb0", (negativeTemperature ? "-" : ""), (tempAbs / 10)); 
 }
 #endif

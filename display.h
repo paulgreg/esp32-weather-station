@@ -150,7 +150,7 @@ void displayLocalTemp(LocalTemp* localTemp) {
   do
   {
     display.fillScreen(GxEPD_WHITE);
-    drawTextCenterAlign(x + 42, y + 24, localTemp->temp, GxEPD_BLACK);
+    drawTextCenterAlign(x + 40, y + 24, localTemp->temp, GxEPD_BLACK);
   } while (display.nextPage());
 }
 

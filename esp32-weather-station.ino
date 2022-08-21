@@ -85,9 +85,7 @@ void loop() {
           // OregonTHN128_RxEnable();
         }
       }
-      if (!localTemp) {
-        displayError("Error:oregon");
-      } else {
+      if (localTemp) {
         LocalTemp localTemp;
         fillLocalTempFromJson(&oregonData, &localTemp);
         displayLocalTemp(&localTemp);

@@ -1,6 +1,6 @@
 #ifdef RF_RX_PIN
 #include <Arduino.h>
-#include <ErriezOregonTHN128Esp32Receive.h> // Lib from https://github.com/paulgreg/ErriezOregonTHN128-esp32
+#include <ErriezOregonTHN128Receive.h>
 #endif
 
 struct LocalTemp {

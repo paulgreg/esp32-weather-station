@@ -71,7 +71,7 @@ void loop() {
 
       #ifdef RF_RX_PIN
       // get local temperature from oregon sensor
-      retries = 20000000;
+      retries = 500000000;
       boolean localTemp = false;
       OregonTHN128Data_t oregonData;
       

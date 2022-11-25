@@ -19,18 +19,18 @@ struct Weather {
 
 void fillWeatherFromJson(Weather* weather) {
   sprintf(weather->iconH1, "%s", (const char*) weatherJson["hourly"][1]["weather"][0]["icon"]);
-  sprintf(weather->tempH1, "%2i\xb0", (int) round(weatherJson["hourly"][1]["temp"]));
-  sprintf(weather->feelsLikeH1, "%2i\xb0", (int) round(weatherJson["hourly"][1]["feels_like"]));
+  sprintf(weather->tempH1, "%2i\xb0", (int) round((double) weatherJson["hourly"][1]["temp"]));
+  sprintf(weather->feelsLikeH1, "%2i\xb0", (int) round((double) weatherJson["hourly"][1]["feels_like"]));
   sprintf(weather->humidityH1, "%3i %%", (int) weatherJson["hourly"][1]["humidity"]);
 
   sprintf(weather->iconD, "%s", (const char*) weatherJson["daily"][0]["weather"][0]["icon"]);
-  sprintf(weather->tempMinD, "%2i\xb0", (int) round(weatherJson["daily"][0]["temp"]["min"]));
-  sprintf(weather->tempMaxD, "%2i\xb0", (int) round(weatherJson["daily"][0]["temp"]["max"]));
+  sprintf(weather->tempMinD, "%2i\xb0", (int) round((double) weatherJson["daily"][0]["temp"]["min"]));
+  sprintf(weather->tempMaxD, "%2i\xb0", (int) round((double) weatherJson["daily"][0]["temp"]["max"]));
   sprintf(weather->humidityD, "%3i %%", (int) weatherJson["daily"][0]["humidity"]);
 
   sprintf(weather->iconD1, "%s", (const char*) weatherJson["daily"][1]["weather"][0]["icon"]);
-  sprintf(weather->tempMinD1, "%2i\xb0", (int) round(weatherJson["daily"][1]["temp"]["min"]));
-  sprintf(weather->tempMaxD1, "%2i\xb0", (int) round(weatherJson["daily"][1]["temp"]["max"]));
+  sprintf(weather->tempMinD1, "%2i\xb0", (int) round((double) weatherJson["daily"][1]["temp"]["min"]));
+  sprintf(weather->tempMaxD1, "%2i\xb0", (int) round((double) weatherJson["daily"][1]["temp"]["max"]));
   sprintf(weather->humidityD1, "%3i %%", (int) weatherJson["daily"][1]["humidity"]);
 
   int timezone_offset = (int) weatherJson["timezone_offset"];

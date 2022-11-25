@@ -88,7 +88,7 @@ void drawIcon(int x, int y, char* icon) {
   } else if (strcmp(icon, "09d") == 0) {
     // 09d - Clouds, rain
     display.drawBitmap(x, y, icon_09d_cloud_bits, icon_09d_cloud_width, icon_09d_cloud_height, GxEPD_BLACK);
-    display.drawBitmap(x, y, icon_09d_rain_bits, icon_09d_rain_width, icon_09d_rain_height, GxEPD_RED);
+    display.drawBitmap(x, y, icon_09d_rain_bits, icon_09d_rain_width, icon_09d_rain_height, GxEPD_BLACK);
   } else if (strcmp(icon, "09n") == 0) {
     // 09d - Clouds, rain - night
     display.drawBitmap(x, y, icon_09d_cloud_bits, icon_09d_cloud_width, icon_09d_cloud_height, GxEPD_BLACK);
@@ -96,7 +96,7 @@ void drawIcon(int x, int y, char* icon) {
   } else if (strcmp(icon, "10d") == 0) {
     // 10d - Clouds, sun, rain
     display.drawBitmap(x, y, icon_10d_cloud_bits, icon_10d_cloud_width, icon_10d_cloud_height, GxEPD_BLACK);
-    display.drawBitmap(x, y, icon_10d_sun_bits, icon_10d_sun_width, icon_10d_sun_height, GxEPD_RED);
+    display.drawBitmap(x, y, icon_10d_sun_bits, icon_10d_sun_width, icon_10d_sun_height, GxEPD_BLACK);
   } else if (strcmp(icon, "10n") == 0) {
     // 10d - Clouds, sun, rain - night
     display.drawBitmap(x, y, icon_10d_cloud_bits, icon_10d_cloud_width, icon_10d_cloud_height, GxEPD_BLACK);

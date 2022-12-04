@@ -93,7 +93,7 @@ void loop() {
       #endif
     }
 
-    disconnectFromWifi();
+    // disconnectFromWifi();
   }
 
   sleep(sleepTime);

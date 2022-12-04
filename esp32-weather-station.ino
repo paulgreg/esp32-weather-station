@@ -74,7 +74,8 @@ void loop() {
       retries = 500000000;
       boolean localTemp = false;
       OregonTHN128Data_t oregonData;
-      
+
+      Serial.println("Try to fetch local temp");
       while(!localTemp && (retries-- > 0)) {
         if (OregonTHN128_Available()) {    
           Serial.println("found");
@@ -85,6 +86,8 @@ void loop() {
           // OregonTHN128_RxEnable();
         }
       }
+      Serial.println("End fetch local temp loop");
+
       if (localTemp) {
         LocalTemp localTemp;
         fillLocalTempFromJson(&oregonData, &localTemp);
@@ -103,6 +106,9 @@ void loop() {
 }
 
 void sleep(uint64_t sleepTime) {
+  Serial.print("Will sleep "); 
+  Serial.println(sleepTime);
+  delay(SECOND);
   Serial.flush();
   display.powerOff();
   esp_sleep_enable_timer_wakeup((uint64_t) sleepTime * MICRO_SEC_TO_MILLI_SEC_FACTOR);

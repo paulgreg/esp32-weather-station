@@ -19,7 +19,9 @@ Optionally, it can also fetch local temperature from an Oregon Scientific sensor
 
 ## Arduino env
 
-use Board "Wemos D1 mini ESP32" to build with Arduino IDE.
+use Board "ESP32 Dev Module" to build with Arduino IDE.
+
+Use GxEPD2 in version 1.4.9 (compilation error for that screen with version 1.5.x)
 
 Copy `parameters.h.dist` to `parameters.h` and update it with your wifi settings and update the URL (you need to change lat/lng and set your OpenWeatherMap API token).
 

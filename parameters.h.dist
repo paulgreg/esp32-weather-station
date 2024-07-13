@@ -1,7 +1,7 @@
 #define WIFI_SSID  "SSID"
 #define WIFI_PASSWORD "PASSWORD"
 
-#define WEATHER_URL "http://api.openweathermap.org/data/2.5/onecall?units=metric&exclude=minutely&appid={APIKEY}&lat={lat}&lon={lon}&lang=en"
+#define WEATHER_URL "http://api.openweathermap.org/data/3.0/onecall?units=metric&exclude=minutely&appid={APIKEY}&lat={lat}&lon={lon}&lang=en"
 
 // to display local temperature from an Oregon Scientific sensor, uncomment line below (a RF module 433Mhz is mandatory)
 // #define RF_RX_PIN 5
